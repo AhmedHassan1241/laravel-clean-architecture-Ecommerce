@@ -1,6 +1,6 @@
 <?php
 
-namespace AppModules\user\Presentation\Requests;
+namespace AppModules\User\Presentation\Requests\User;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -18,7 +18,7 @@ class RegisterUserRequest extends FormRequest
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
-            'role' => 'nullable|string|in:user,admin', // ✅ إضافة هذا السطر
+            'role' => 'nullable|string|in:admin,customer,delivery', // ✅ إضافة هذا السطر
 
         ];
     }

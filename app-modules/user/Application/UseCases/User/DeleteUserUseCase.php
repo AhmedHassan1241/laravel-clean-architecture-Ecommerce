@@ -1,6 +1,6 @@
 <?php
 
-namespace AppModules\User\Application\UseCases;
+namespace AppModules\User\Application\UseCases\User;
 
 
 use AppModules\user\Domain\Services\UserService;

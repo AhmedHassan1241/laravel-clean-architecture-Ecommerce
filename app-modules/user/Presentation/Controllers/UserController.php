@@ -2,12 +2,12 @@
 
 namespace AppModules\User\Presentation\Controllers;
 
-use AppModules\User\Application\DTOs\UpdateUserDTO;
-use AppModules\User\Application\UseCases\DeleteUserUseCase;
-use AppModules\User\Application\UseCases\GetAllUserCase;
-use AppModules\User\Application\UseCases\GetUserByIdUseCase;
-use AppModules\User\Application\UseCases\UpdateUserUseCase;
-use AppModules\User\Presentation\Requests\UpdateUserRequest;
+use AppModules\User\Application\DTOs\User\UpdateUserDTO;
+use AppModules\User\Application\UseCases\User\DeleteUserUseCase;
+use AppModules\User\Application\UseCases\User\GetAllUserCase;
+use AppModules\User\Application\UseCases\User\GetUserByIdUseCase;
+use AppModules\User\Application\UseCases\User\UpdateUserUseCase;
+use AppModules\User\Presentation\Requests\User\UpdateUserRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
 

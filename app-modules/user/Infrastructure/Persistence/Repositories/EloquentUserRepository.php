@@ -2,13 +2,14 @@
 
 namespace AppModules\User\Infrastructure\Persistence\Repositories;
 
-use AppModules\User\Application\DTOs\LoginUserDTO;
-use AppModules\user\Application\DTOs\RegisterUserDTO;
-use AppModules\User\Application\DTOs\UpdateUserDTO;
+use AppModules\User\Application\DTOs\User\LoginUserDTO;
+use AppModules\User\Application\DTOs\User\RegisterUserDTO;
+use AppModules\User\Application\DTOs\User\UpdateUserDTO;
 use AppModules\User\Domain\Entities\User;
 use AppModules\User\Domain\Repositories\UserRepositoryInterface;
 use AppModules\User\Infrastructure\Persistence\Models\UserModel;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Hash;
 
 class EloquentUserRepository implements UserRepositoryInterface
@@ -25,14 +26,14 @@ class EloquentUserRepository implements UserRepositoryInterface
     {
         return new User(
             id: $userModel->id,
-            name: $userModel->name,
-            email: $userModel->email, // ✅ صحيح
             role: $userModel->role,
+            name: $userModel->name,
+            email: $userModel->email,
             password: $userModel->password,
         );
     }
 
-    public function update(int $id, UpdateUserDTO $userDTO): ?User
+    public function update(int $id, UpdateUserDTO $updateUserDTO): ?User
     {
         $userModel = UserModel::find($id);
         if (!$userModel) {
@@ -40,10 +41,10 @@ class EloquentUserRepository implements UserRepositoryInterface
 
         }
 
-        $userModel->name = $userDTO->getName();
-        $userModel->email = $userDTO->getEmail();
-        if ($userDTO->getPassword() !== null && $userDTO->getPassword() !== '') {
-            $userModel->password = bcrypt($userDTO->getPassword());
+        $userModel->name = $updateUserDTO->getName();
+        $userModel->email = $updateUserDTO->getEmail();
+        if ($updateUserDTO->getPassword() !== null && $updateUserDTO->getPassword() !== '') {
+            $userModel->password = bcrypt($updateUserDTO->getPassword());
         }
 
         $userModel->save();
@@ -52,7 +53,7 @@ class EloquentUserRepository implements UserRepositoryInterface
 
     }
 
-//    public function update(int $id, UpdateUserDTO $userDTO): ?User
+//    public function update(int $id, UpdateUserDTO $updateUserDTO): ?User
 //    {
 //        // البحث عن المستخدم في قاعدة البيانات
 //        $userModel = UserModel::find($id);
@@ -79,8 +80,8 @@ class EloquentUserRepository implements UserRepositoryInterface
     public function register(RegisterUserDTO $registerUserDTO): User
     {
         $user = new User(id: 0,
-            role: $registerUserDTO->getRole(),
             name: $registerUserDTO->getName(),
+            role: $registerUserDTO->getRole(),
             email: $registerUserDTO->getEmail(),
             password: $registerUserDTO->getHashedPassword());
 
@@ -101,13 +102,18 @@ class EloquentUserRepository implements UserRepositoryInterface
 
     public function login(LoginUserDTO $loginUserDTO): ?User
     {
-        $userModel = UserModel::where('email', $loginUserDTO->getEmail())->firstOrFail();
-        if (!Hash::check($loginUserDTO->getPassword(), $userModel->password)) {
-            throw new AuthenticationException("Invalid credentials");
+        try {
+            $userModel = UserModel::where('email', $loginUserDTO->getEmail())->firstOrFail();
 
+            if (!Hash::check($loginUserDTO->getPassword(), $userModel->password)) {
+                throw new AuthenticationException("Invalid credentials");
+
+            }
+        } catch (ModelNotFoundException $e) {
+            throw new AuthenticationException("Invalid credentials");
         }
 
-        return $this->mapToDomain($userModel); // ✅ الحل هنا
+        return $this->mapToDomain($userModel);
 
     }
 

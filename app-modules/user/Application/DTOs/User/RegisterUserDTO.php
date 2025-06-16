@@ -1,6 +1,6 @@
 <?php
 
-namespace AppModules\user\Application\DTOs;
+namespace AppModules\User\Application\DTOs\User;
 
 
 //This file Data Transfer To Object (DTO)

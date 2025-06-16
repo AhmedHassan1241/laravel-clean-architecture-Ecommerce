@@ -1,8 +1,8 @@
 <?php
 
-namespace AppModules\User\Application\UseCases;
+namespace AppModules\User\Application\UseCases\User;
 
-use AppModules\User\Application\DTOs\UpdateUserDTO;
+use AppModules\User\Application\DTOs\User\UpdateUserDTO;
 use AppModules\user\Domain\Services\UserService;
 
 class UpdateUserUseCase

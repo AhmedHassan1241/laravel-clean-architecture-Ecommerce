@@ -1,6 +1,6 @@
 <?php
 
-namespace AppModules\User\Presentation\Requests;
+namespace AppModules\User\Presentation\Requests\User;
 
 use AppModules\User\Infrastructure\Persistence\Models\UserModel;
 use Illuminate\Foundation\Http\FormRequest;

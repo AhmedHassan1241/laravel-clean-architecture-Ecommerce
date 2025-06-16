@@ -2,9 +2,9 @@
 
 namespace AppModules\user\Domain\Services;
 
-use AppModules\User\Application\DTOs\LoginUserDTO;
-use AppModules\user\Application\DTOs\RegisterUserDTO;
-use AppModules\User\Application\DTOs\UpdateUserDTO;
+use AppModules\User\Application\DTOs\User\LoginUserDTO;
+use AppModules\User\Application\DTOs\User\RegisterUserDTO;
+use AppModules\User\Application\DTOs\User\UpdateUserDTO;
 use AppModules\User\Domain\Entities\User;
 use AppModules\User\Domain\Repositories\UserRepositoryInterface;
 

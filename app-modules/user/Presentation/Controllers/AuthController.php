@@ -2,13 +2,13 @@
 
 namespace AppModules\User\Presentation\Controllers;
 
-use AppModules\User\Application\DTOs\LoginUserDTO;
-use AppModules\user\Application\DTOs\RegisterUserDTO;
+use AppModules\User\Application\DTOs\User\LoginUserDTO;
+use AppModules\User\Application\DTOs\User\RegisterUserDTO;
 use AppModules\User\Application\Services\AuthService;
-use AppModules\User\Application\UseCases\LoginUserUseCase;
-use AppModules\User\Application\UseCases\RegisterUserUseCase;
-use AppModules\user\Presentation\Requests\LoginUserRequest;
-use AppModules\user\Presentation\Requests\RegisterUserRequest;
+use AppModules\User\Application\UseCases\User\LoginUserUseCase;
+use AppModules\User\Application\UseCases\User\RegisterUserUseCase;
+use AppModules\User\Presentation\Requests\User\LoginUserRequest;
+use AppModules\User\Presentation\Requests\User\RegisterUserRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
 
@@ -23,7 +23,7 @@ class AuthController extends Controller
     {
         $data = $request->validated();
 
-        $userDTO = new RegisterUserDTO($data['name'], $data['email'], $data['password'], $data['role'] ?? 'user');
+        $userDTO = new RegisterUserDTO($data['name'], $data['email'], $data['password'], $data['role'] ?? 'customer');
         $user = $this->registerUserUseCase->execute($userDTO);
 
         return response()->json([
@@ -36,10 +36,9 @@ class AuthController extends Controller
     {
         $data = $loginUserRequest->validated();
         $userDTO = new LoginUserDTO($data['email'], $data['password']);
+
         $user = $this->loginUserUseCase->execute($userDTO);
-        // ✅ اجلب الـ UserModel باستخدام الايميل أو الـ id من الكائن الدومين
         $token = $this->authService->generateToken($user);
-//                return response()->json($user);
         return response()->json([
             'message' => 'Login successful',
             'token' => $token,

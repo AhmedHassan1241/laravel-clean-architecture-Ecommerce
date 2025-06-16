@@ -1,8 +1,8 @@
 <?php
 
-namespace AppModules\User\Application\UseCases;
+namespace AppModules\User\Application\UseCases\User;
 
-use AppModules\user\Application\DTOs\RegisterUserDTO;
+use AppModules\User\Application\DTOs\User\RegisterUserDTO;
 use AppModules\User\Domain\Entities\User;
 use AppModules\user\Domain\Services\UserService;
 
