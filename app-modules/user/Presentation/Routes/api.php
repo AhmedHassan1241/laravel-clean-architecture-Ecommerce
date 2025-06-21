@@ -3,6 +3,7 @@
 use AppModules\User\Presentation\Controllers\AuthController;
 use AppModules\User\Presentation\Controllers\ProfileController;
 use AppModules\User\Presentation\Controllers\UserController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth/')->group(function () {
@@ -30,6 +31,11 @@ Route::prefix('admin/user')->middleware(['auth:sanctum', 'IsAdmin'])->group(func
 //Route::prefix('customer/user')->middleware(['auth:sanctum', 'IsCustomer'])->group(function () {
 //    Route::get('{id}', [UserController::class, 'show']);
 //});
+
+//test
+Route::get('/products', function (Request $request) {
+    return response()->json(['message' => "Products List"], 201);
+})->middleware(['auth:sanctum', 'permission:view products']);
 
 
 // for user

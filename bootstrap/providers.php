@@ -1,8 +1,7 @@
 <?php
 
-use AppModules\user\Providers\UserServiceProvider;
-
 return [
-    App\Providers\AppServiceProvider::class,
-    UserServiceProvider::class,
+    AppModules\User\Providers\UserServiceProvider::class,
+    AppModules\Product\Providers\ProductServiceProvider::class,
+    AppModules\Category\Providers\CategoryServiceProvider::class,
 ];

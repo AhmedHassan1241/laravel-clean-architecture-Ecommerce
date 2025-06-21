@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\CheckPermission;
 use App\Http\Middleware\IsAdmin;
 use App\Http\Middleware\IsCustomer;
 use App\Http\Middleware\IsDelivery;
@@ -24,7 +25,12 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         //
-        $middleware->alias(["IsAdmin" => IsAdmin::class, "IsCustomer" => IsCustomer::class, "IsDelivery" => IsDelivery::class]);
+        $middleware->alias([
+            "IsAdmin" => IsAdmin::class,
+            "IsCustomer" => IsCustomer::class,
+            "IsDelivery" => IsDelivery::class,
+            'permission' => CheckPermission::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

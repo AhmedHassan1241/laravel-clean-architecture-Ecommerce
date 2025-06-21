@@ -29,7 +29,7 @@ class EloquentUserRepository implements UserRepositoryInterface
             role: $userModel->role,
             name: $userModel->name,
             email: $userModel->email,
-            password: $userModel->password,
+            password: $userModel->password
         );
     }
 
@@ -92,6 +92,12 @@ class EloquentUserRepository implements UserRepositoryInterface
         $userModel->email = $user->getEmail();
         $userModel->password = $user->getPassword();
         $userModel->save();
+
+//        $role = Role::firstOrCreate([
+//            'name' => $user->getRole(),
+//            'guard_name' => 'sanctum'
+//        ]);
+//        $userModel->assignRole($role);
 
         // تحديث الـ id في الدومين كيان لو كان جديد
         if (!$user->id) {

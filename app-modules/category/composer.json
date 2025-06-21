@@ -1,0 +1,24 @@
+{
+    "name": "modules/category",
+    "description": "",
+    "type": "library",
+    "version": "1.0.0",
+    "license": "proprietary",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "AppModules\\Category\\": "./",
+            "AppModules\\Category\\Tests\\": "tests/",
+            "AppModules\\Category\\Database\\Factories\\": "database/factories/",
+            "AppModules\\Category\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "minimum-stability": "stable",
+    "extra": {
+        "laravel": {
+            "providers": [
+                "AppModules\\Category\\Providers\\CategoryServiceProvider"
+            ]
+        }
+    }
+}
