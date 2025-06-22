@@ -3,6 +3,24 @@
 namespace AppModules\Category\Presentation\Routes;
 
 
+use AppModules\Category\Presentation\Controllers\CategoryController;
+use Illuminate\Support\Facades\Route;
+
+
+//Route::prefix('categories')->group(function () {
+//    Route::get('/', [CategoryController::class, 'index']);
+//    Route::get('/{id}', [CategoryController::class, 'show']);
+//});
+
+Route::apiResource('categories', CategoryController::class)
+    ->only(['index', 'show'])
+    ->parameters(['categories' => 'id']);
+Route::middleware(['auth:sanctum'])->group(function () {
+//    Route::middleware(['auth:sanctum', 'permission:create categories'])->group(function () {
+
+    Route::apiResource('categories', CategoryController::class)->except(['index', 'show'])->parameters(['categories' => 'id']);
+});
+
 // Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
 // Route::get('/categories/create', [CategoryController::class, 'create'])->name('categories.create');
 // Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');

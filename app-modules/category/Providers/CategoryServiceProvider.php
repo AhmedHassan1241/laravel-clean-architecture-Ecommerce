@@ -2,6 +2,8 @@
 
 namespace AppModules\Category\Providers;
 
+use AppModules\Category\Domain\Repositories\CategoryRepositoryInterface;
+use AppModules\Category\Infrastructure\Persistence\Repositories\EloquentCategoryRepository;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
@@ -13,11 +15,13 @@ class CategoryServiceProvider extends ServiceProvider
     public function register(): void
     {
         //
+        $this->app->bind(
+            CategoryRepositoryInterface::class,
+            EloquentCategoryRepository::class
+        );
     }
 
-    /**
-     * Bootstrap services.
-     */
+
     public function boot(): void
     {
         //

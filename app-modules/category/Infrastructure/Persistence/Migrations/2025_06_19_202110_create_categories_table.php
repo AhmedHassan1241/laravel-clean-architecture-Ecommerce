@@ -16,15 +16,15 @@ return new class extends Migration {
             $table->string('slug')->unique();
             $table->text('description')->nullable();
             $table->boolean('is_active')->default(true);
-            $table->unsignedBigInteger('parent_id')->nullable();
-            $table->foreign('parent_id')
-                ->references('id')
-                ->on('categories')
-                ->onDelete('set null');
-//            $table->foreignId('parent_id')->nullable()
-//                ->constrained('categories', 'id')
-//                ->nullOnDelete();
-//
+//            $table->unsignedBigInteger('parent_id')->nullable();
+//            $table->foreign('parent_id')
+//                ->references('id')
+//                ->on('categories')
+//                ->onDelete('set null');
+            $table->foreignId('parent_id')->nullable()
+                ->constrained('categories', 'id')
+                ->nullOnDelete();
+
             $table->timestamps();
         });
     }

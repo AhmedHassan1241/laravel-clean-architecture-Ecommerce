@@ -34,6 +34,17 @@ class EloquentProductRepository implements ProductRepositoryInterface
         $productModel->stock = $product->getStock();
         $productModel->sku = $product->getSku();
         $productModel->is_active = $product->isActive();
+
+//        $productModel->fill([
+//        'id' => $product->getId(),
+//            'name' => $product->getName(),
+//            'slug' => $product->getSlug(),
+//            'description' => $product->getDescription(),
+//            'price' => $product->getPrice(),
+//            'stock' => $product->getStock(),
+//            'sku' => $product->getSku(),
+//            'is_active' => $product->isActive(),
+//        ]);
         $productModel->save();
         return $this->mapToDomain($productModel);
 

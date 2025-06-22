@@ -6,15 +6,20 @@ use Illuminate\Support\Facades\Route;
 // Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 
 Route::get('/products/search', [ProductController::class, 'search']);
-Route::apiResource('products', ProductController::class)->only(['index', 'show']);
+
+
+Route::apiResource('products', ProductController::class)
+    ->only(['index', 'show'])
+    ->parameters(['products' => 'id']);
+
 
 Route::middleware(['auth:sanctum'])->group(function () {
 //    Route::middleware(['auth:sanctum', 'permission:create products'])->group(function () {
 
-    Route::apiResource('products', ProductController::class)->parameters([
-        'products' => 'id'
-        // /id instead of /product
-    ])->except(['index', 'show']);
+    Route::apiResource('products', ProductController::class)
+        ->parameters(['products' => 'id'
+            // /id instead of /product
+        ])->except(['index', 'show']);
 });
 
 

@@ -17,11 +17,11 @@ class UpdateProductRequest extends FormRequest
 
         return [
             'name' => 'sometimes|string|max:255',
-            'slug' => 'sometimes|string|max:255|unique:products,slug,' . $this->id,
+            'slug' => 'sometimes|string|max:255|unique:products,slug,' . $this->route('id'),
             'description' => 'sometimes|string',
             'price' => 'sometimes|numeric|min:0',
             'stock' => 'sometimes|integer|min:0',
-            'sku' => 'sometimes|string|max:255|unique:products,sku,' . $this->id,
+            'sku' => 'sometimes|string|max:255|unique:products,sku,' . $this->route('id'),
             'is_active' => 'sometimes|boolean'
         ];
     }
