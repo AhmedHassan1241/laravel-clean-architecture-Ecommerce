@@ -25,7 +25,7 @@ class CategoryService
         return $this->categoryRepository->update($id, $categoryDTO);
     }
 
-    public function show(int $id): ?Category
+    public function show(int $id): ?array
     {
         return $this->categoryRepository->show($id);
     }

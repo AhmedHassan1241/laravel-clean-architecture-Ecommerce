@@ -42,7 +42,7 @@ class EloquentCategoryRepository implements CategoryRepositoryInterface
 
     public function mapToDomain(CategoryModel $categoryModel): Category
     {
-        $category = new Category(
+        return new Category(
             id: $categoryModel->id,
             name: $categoryModel->name,
             slug: $categoryModel->slug,
@@ -52,23 +52,27 @@ class EloquentCategoryRepository implements CategoryRepositoryInterface
 
         );
 
-        if ($categoryModel->relationLoaded('children') && $categoryModel->children->isNotEmpty()) {
-            $child = $categoryModel->children->map(function ($child) {
-                return $this->mapToDomain($child);
-            })->toArray();
-            $category->setChildren($child);
-        }
-        return $category;
     }
 
     public function index(): ?array
     {
-        $categoriesModel = CategoryModel::where('is_active', true)->get();
 
-
-        return $categoriesModel ? $categoriesModel->map(fn($categoryModel) => $this->mapToDomain($categoryModel))->toArray() : null;
-
+        $mainCategoriesModel = CategoryModel::with('children')->where('is_active', true)->whereNull('parent_id')->get();
+        return $mainCategoriesModel ? ($mainCategoriesModel->map(function ($categoryModel) {
+            return ['category' => $this->mapToDomain($categoryModel),
+                'children' => $categoryModel->children->map(fn($child) => $this->mapToDomain($child))->toArray()
+            ];
+        })->toArray()) : null;
     }
+
+//    public function index(): ?array
+//    {
+//        $categoriesModel = CategoryModel::where('is_active', true)->get();
+//
+//
+//        return $categoriesModel ? $categoriesModel->map(fn($categoryModel) => $this->mapToDomain($categoryModel))->toArray() : null;
+//
+//    }
 
     public function destroy(int $id): bool
     {
@@ -108,13 +112,28 @@ class EloquentCategoryRepository implements CategoryRepositoryInterface
 
     }
 
-    public function show(int $id): ?Category
+//    public function show(int $id): ?Category
+//    {
+//        $categoryModel = CategoryModel::with(['parent', 'children'])->find($id);
+//        dd($categoryModel);
+//
+//        return $categoryModel ? $categoryModel->$this->mapToDomain($categoryModel) : null;
+//
+//
+//    }
+
+    public function show(int $id): ?array
     {
-//        dd($id);
         $categoryModel = CategoryModel::with(['parent', 'children'])->find($id);
 
-        return $categoryModel ? $this->mapToDomain($categoryModel) : null;
+        return $categoryModel
+            ? [
+                'category' => $this->mapToDomain($categoryModel),
+                'children' => $categoryModel->children->map(fn($child) => $this->mapToDomain($child))->toArray()
+            ]
+            : null;
 
 
     }
+
 }

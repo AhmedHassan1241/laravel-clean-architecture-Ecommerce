@@ -13,7 +13,7 @@ interface CategoryRepositoryInterface
 
     public function update(int $id, UpdateCategoryDTO $categoryDTO): ?Category;
 
-    public function show(int $id): ?Category;
+    public function show(int $id): ?array;
 
     public function index(): ?array;
 

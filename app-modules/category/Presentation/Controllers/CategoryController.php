@@ -63,7 +63,7 @@ class CategoryController extends Controller
             ], 404);
         }
         return response()->json([
-            'Category' => $category->toArray()
+            'data' => $category
         ], 200);
     }
 
@@ -76,7 +76,7 @@ class CategoryController extends Controller
                 'message' => 'No Category Found.'
             ], 404);
         }
-        return response()->json(['message' => $categories], 200);
+        return response()->json(['data' => $categories], 200);
     }
 
     public function destroy(int $id): JsonResponse

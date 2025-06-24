@@ -2,7 +2,6 @@
 
 namespace AppModules\Category\Application\UseCases;
 
-use AppModules\Category\Domain\Entities\Category;
 use AppModules\Category\Domain\Services\CategoryService;
 
 class ShowCategoryUseCase
@@ -12,7 +11,7 @@ class ShowCategoryUseCase
 
     }
 
-    public function execute(int $id): ?Category
+    public function execute(int $id): ?array
     {
         return $this->categoryService->show($id);
     }

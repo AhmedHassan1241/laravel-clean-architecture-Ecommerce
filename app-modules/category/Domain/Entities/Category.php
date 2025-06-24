@@ -13,18 +13,6 @@ class Category
 
     }
 
-    public function toArray(): array
-    {
-        return [
-            'id' => $this->getId(),
-            'name' => $this->getName(),
-            'slug' => $this->getSlug(),
-            'description' => $this->getDescription(),
-            'is_active' => $this->getIsActive(),
-            'parent_id' => $this->getParentId(),
-            'children' => array_map(fn($child) => $child->toArray(), $this->getChildren())
-        ];
-    }
 
     /**
      * @return int|null
