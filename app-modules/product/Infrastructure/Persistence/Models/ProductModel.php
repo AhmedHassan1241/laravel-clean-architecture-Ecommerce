@@ -4,6 +4,7 @@ namespace AppModules\Product\Infrastructure\Persistence\Models;
 
 use AppModules\product\Infrastructure\Persistence\Factories\ProductModelFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -15,7 +16,7 @@ use Spatie\Permission\Traits\HasRoles;
 class ProductModel extends Authenticatable
 {
     //
-    use HasApiTokens, HasFactory, Notifiable, HasRoles;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles, SoftDeletes;
 
     public $timestamps = true;
 
@@ -37,6 +38,11 @@ class ProductModel extends Authenticatable
     public function scopePriceBetween($query, $min, $max)
     {
         return $query->whereBetween('price', [$min, $max]);
+    }
+
+    public function scopeHasStock($query, $min = 1)
+    {
+        return $query->where('stock', '>=', $min);
     }
 
     public function getFormattedNameAttribute()

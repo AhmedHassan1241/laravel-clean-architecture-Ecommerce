@@ -5,6 +5,7 @@ namespace AppModules\Product\Domain\Repositories;
 use AppModules\product\Application\DTOs\CreateProductDTO;
 use AppModules\product\Application\DTOs\UpdateProductDTO;
 use AppModules\product\Domain\Entities\Product;
+use Illuminate\Http\Request;
 
 interface ProductRepositoryInterface
 {
@@ -18,7 +19,15 @@ interface ProductRepositoryInterface
 
     public function destroy(int $id): bool;
 
+    public function undoDelete(int $id): bool;
+
+    public function permanentDelete(int $id): bool;
+
+    public function indexAdmin(): ?array;
+
     public function search(string $query): ?array;
+
+    public function filter(Request $request): ?array;
 
 
 }

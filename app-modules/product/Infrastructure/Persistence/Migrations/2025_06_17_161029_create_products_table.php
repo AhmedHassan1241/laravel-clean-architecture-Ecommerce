@@ -19,7 +19,6 @@ return new class extends Migration {
             $table->integer('stock')->default(0);
             $table->string('sku')->unique();
             $table->boolean('is_active')->default(true);
-//            $table->softDeletes();
             $table->timestamps();
         });
     }
@@ -30,9 +29,5 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::dropIfExists('products');
-//        Schema::table('products', function (Blueprint $table) {
-//            $table->dropSoftDeletes();
-//        });
-
     }
 };

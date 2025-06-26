@@ -7,6 +7,7 @@ use AppModules\product\Application\DTOs\UpdateProductDTO;
 use AppModules\product\Domain\Entities\Product;
 use AppModules\Product\Domain\Repositories\ProductRepositoryInterface;
 use AppModules\Product\Infrastructure\Persistence\Models\ProductModel;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class EloquentProductRepository implements ProductRepositoryInterface
@@ -67,14 +68,20 @@ class EloquentProductRepository implements ProductRepositoryInterface
 
     public function index(): ?array
     {
-        $products = ProductModel::all(); //all active products
-//        $products = ProductModel::withoutGlobalScope('active')->get(); //all products with an active
+        $products = ProductModel::all(); //all active products بيستدعي booted -> addGlobalScope
+//        $products = ProductModel::withoutGlobalScope('active')->get(); //all products with active + unactive
+//        $products = ProductModel::priceBetween(10, 50)->get(); // range  price of products , active
+//        $products = ProductModel::hasStock(90)->get();  // get stock>=90 , active
 
-//        $products = ProductModel::priceBetween(10, 50)->get(); // range  price of products
-        if (!$products) {
-            return null;
-        }
-        return $products->map(fn($productModel) => $this->mapToDomain($productModel))->toArray();
+        return $products ? ($products->map(fn($productModel) => $this->mapToDomain($productModel))->toArray()) : null;
+    }
+
+    public function indexAdmin(): ?array
+    {
+        $products = ProductModel::withTrashed()->get();
+//        dd($products);
+
+        return $products ? ($products->map(fn($productModel) => $this->mapToDomain($productModel))->toArray()) : null;
     }
 
     public function update(int $id, UpdateProductDTO $updateProductDTO): ?Product
@@ -102,11 +109,18 @@ class EloquentProductRepository implements ProductRepositoryInterface
 
     public function destroy(int $id): bool
     {
-        $product = $this->show($id);
+        $product = ProductModel::find($id);
         if (!$product) {
             return false;
         }
-        return ProductModel::destroy($id);
+        return $product->delete();
+    }
+
+    public function permanentDelete(int $id): bool
+    {
+        $productToDelete = ProductModel::withTrashed()->find($id);
+
+        return $productToDelete ? $productToDelete->forceDelete() : false;
     }
 
     public function show(int $id): ?Product
@@ -119,12 +133,45 @@ class EloquentProductRepository implements ProductRepositoryInterface
 
     }
 
+    public function undoDelete(int $id): bool
+    {
+//        dd(ProductModel::onlyTrashed()->get());
+//        $restoreProduct = ProductModel::withTrashed()->find($id);
+        $restoreProduct = ProductModel::onlyTrashed()->find($id);
+
+        if (!$restoreProduct || !$restoreProduct->trashed()) {
+            return false;
+        }
+
+        return $restoreProduct->restore();
+    }
+
     public function search(string $query): ?array
     {
-//        dd($query);
+        if (trim($query) === '') {
+            return [];
+        }
         $products = ProductModel::where('is_active', true)->where(fn($q) => $q->where('name', 'like', "%{$query}%")
             ->orWhere('description', 'like', "%{$query}%")
         )->get();
         return $products->map(fn($productModel) => $this->mapToDomain($productModel))->toArray();
+    }
+
+    public function filter(Request $request): ?array
+    {
+//        dd($request);
+        $products = ProductModel::query()
+//            ->where('is_active', true)
+            ->when($request->has('min_price'), fn($q) => $q->where('price', '>=', $request->min_price))
+            ->when($request->has('max_price'), fn($q) => $q->where('price', '<=', $request->max_price))
+            ->when($request->has('stock_min'), fn($q) => $q->where('stock', '>=', $request->stock_min))
+            ->when($request->has('q'), function ($query) use ($request) {
+                $query->where(fn($q) => $q->where('name', 'like', "%{$request->q}%")
+                    ->orWhere('description', 'like', "%{$request->q}%")
+                );
+
+            })->get();
+
+        return $products ? ($products->map(fn($productModel) => $this->mapToDomain($productModel))->toArray()) : null;
     }
 }

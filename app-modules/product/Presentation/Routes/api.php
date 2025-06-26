@@ -3,11 +3,21 @@
 use AppModules\Product\Presentation\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
-// Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 
+// for admin
+Route::middleware(['auth:sanctum', 'IsAdmin'])->group(function () {
+    Route::delete('products/undelete/{id}', [ProductController::class, 'undoDelete']);
+    Route::delete('products/permanentdelete/{id}', [ProductController::class, 'permanentDelete']);
+    Route::get('products/index/admin', [ProductController::class, 'indexAdmin']);
+
+});
+
+
+//for all
 Route::get('/products/search', [ProductController::class, 'search']);
+Route::get('/products/filter', [ProductController::class, 'filter']);
 
-
+//for all
 Route::apiResource('products', ProductController::class)
     ->only(['index', 'show'])
     ->parameters(['products' => 'id']);

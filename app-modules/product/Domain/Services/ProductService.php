@@ -6,6 +6,7 @@ use AppModules\product\Application\DTOs\CreateProductDTO;
 use AppModules\product\Application\DTOs\UpdateProductDTO;
 use AppModules\product\Domain\Entities\Product;
 use AppModules\Product\Domain\Repositories\ProductRepositoryInterface;
+use Illuminate\Http\Request;
 
 class ProductService
 {
@@ -24,6 +25,11 @@ class ProductService
         return $this->productRepository->index();
     }
 
+    public function indexAdmin(): ?array
+    {
+        return $this->productRepository->indexAdmin();
+    }
+
     public function show(int $id): ?Product
     {
         return $this->productRepository->show($id);
@@ -39,8 +45,23 @@ class ProductService
         return $this->productRepository->destroy($id);
     }
 
+    public function undoDelete(int $id): bool
+    {
+        return $this->productRepository->undoDelete($id);
+    }
+
+    public function permanentDelete(int $id): bool
+    {
+        return $this->productRepository->permanentDelete($id);
+    }
+
     public function search(string $query): ?array
     {
         return $this->productRepository->search($query);
+    }
+
+    public function filter(Request $request): ?array
+    {
+        return $this->productRepository->filter($request);
     }
 }
