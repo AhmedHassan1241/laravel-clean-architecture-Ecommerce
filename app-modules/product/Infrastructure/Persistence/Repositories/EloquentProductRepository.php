@@ -10,6 +10,7 @@ use AppModules\Product\Domain\Repositories\ProductRepositoryInterface;
 use AppModules\Product\Infrastructure\Mapper\ProductMapper;
 use AppModules\Product\Infrastructure\Persistence\Models\ProductModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -51,6 +52,7 @@ class EloquentProductRepository implements ProductRepositoryInterface
         if ($product->getCategories()) {
             $productModel->categories()->sync($product->getCategories());
         }
+        Cache::forget('products_list');
         return ProductMapper::mapToDomain($productModel->fresh(['categories']));
 
 
@@ -63,8 +65,8 @@ class EloquentProductRepository implements ProductRepositoryInterface
 //        $products = ProductModel::withoutGlobalScope('active')->get(); //all products with active + unactive
 //        $products = ProductModel::priceBetween(10, 50)->get(); // range  price of products , active
 //        $products = ProductModel::hasStock(90)->get();  // get stock>=90 , active
-        $products = ProductModel::with('categories')->get();
-//        dd($products);
+        $products = Cache::remember('products_list', 300, fn() => ProductModel::with('categories')->get()); //cache
+//        $products = ProductModel::with('categories')->get();
         return $products ? ($products->map(fn($productModel) => ProductMapper::mapToDomain($productModel))->toArray()) : null;
     }
 
@@ -85,6 +87,7 @@ class EloquentProductRepository implements ProductRepositoryInterface
         if (!$productModel) {
             return null;
         }
+
         if ($updateProductDTO->getImage()) {
             if ($productModel->image) {
                 Storage::disk('public')->delete($productModel->image);
@@ -109,6 +112,8 @@ class EloquentProductRepository implements ProductRepositoryInterface
 //        $productModel->load('categories');
 //        return ProductMapper::mapToDomain($productModel);
 //or
+        Cache::forget('products_list');
+        Cache::forget("product_{$productModel->id}");
         return ProductMapper::mapToDomain($productModel->fresh('categories'));
 
     }
@@ -119,19 +124,35 @@ class EloquentProductRepository implements ProductRepositoryInterface
         if (!$product) {
             return false;
         }
+        Cache::forget('products_list');
+        Cache::forget("product_{$product->id}");
+
+//        dd($product->image);
+//        if ($product->image) {
+//            Storage::disk('public')->delete($product->image);
+//        }
         return $product->delete();
     }
 
     public function permanentDelete(int $id): bool
     {
         $productToDelete = ProductModel::withTrashed()->find($id);
+        Cache::forget('products_list');
+        Cache::forget("product_{$productToDelete->id}");
+
+//        dd($productToDelete->image);
+        if ($productToDelete->image) {
+            Storage::disk('public')->delete($productToDelete->image);
+        }
 
         return $productToDelete ? $productToDelete->forceDelete() : false;
     }
 
     public function show(int $id): ?Product
     {
-        $productModule = ProductModel::with('categories')->find($id);
+//        $productModule = ProductModel::with('categories')->find($id);
+        $productModule = Cache::remember("product_{$id}", 300, fn() => ProductModel::with('categories')->find($id));
+//        dd($productModule);
         if (!$productModule) {
             return null;
         }
