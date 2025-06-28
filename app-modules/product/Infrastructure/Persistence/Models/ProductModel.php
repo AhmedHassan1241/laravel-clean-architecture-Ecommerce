@@ -66,8 +66,9 @@ class ProductModel extends Authenticatable
         return $this->belongsToMany(CategoryModel::class, 'category_product', 'product_id', 'category_id');
     }
 
-    public function getImageUrl()
+
+    public function images()
     {
-        return asset('storage/' . $this->image);
+        return $this->hasMany(ProductImageModel::class, 'product_id');
     }
 }

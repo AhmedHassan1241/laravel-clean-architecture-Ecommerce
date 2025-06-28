@@ -18,6 +18,7 @@ class EloquentProductRepository implements ProductRepositoryInterface
 {
     public function store(CreateProductDTO $createProductDTO): ?Product
     {
+//        dd($createProductDTO);
 
         $product = new Product(
             id: 0,
@@ -29,7 +30,7 @@ class EloquentProductRepository implements ProductRepositoryInterface
             sku: $createProductDTO->getSku(),
             is_active: $createProductDTO->isActive(),
             is_featured: $createProductDTO->isFeatured(),
-            image: $createProductDTO->getImage(),
+            images: $createProductDTO->getImages(),
             categories: $createProductDTO->getCategories()
         );
 
@@ -45,15 +46,17 @@ class EloquentProductRepository implements ProductRepositoryInterface
             'sku' => $product->getSku(),
             'is_active' => $product->isActive(),
             'is_featured' => $product->isFeatured(),
-            'image' => $product->getImage()
         ]);
-
         $productModel->save();
         if ($product->getCategories()) {
             $productModel->categories()->sync($product->getCategories());
         }
+
+        foreach ($product->getImages() as $imagePath) {
+            $productModel->images()->create(['image_path' => $imagePath]);
+        }
         Cache::forget('products_list');
-        return ProductMapper::mapToDomain($productModel->fresh(['categories']));
+        return ProductMapper::mapToDomain($productModel->fresh(['categories', 'images']));
 
 
     }
@@ -83,18 +86,11 @@ class EloquentProductRepository implements ProductRepositoryInterface
         $productModel = ProductModel::with('categories')->find($id);
         $newName = $updateProductDTO->getName();
         $newSlug = $updateProductDTO->getSlug();
-
         if (!$productModel) {
             return null;
         }
 
-        if ($updateProductDTO->getImage()) {
-            if ($productModel->image) {
-                Storage::disk('public')->delete($productModel->image);
-            }
-            $extension = $updateProductDTO->getImage()->getClientOriginalExtension();
-            $path = $updateProductDTO->getImage()->storeAs('products', $newSlug ?? $productModel->slug . "." . $extension, 'public');
-        }
+
         $productModel->update([
             'name' => $newName ?? $productModel->name,
             'slug' => $newSlug ? $newSlug : ($newName ? Str::slug($newName) : ($newSlug ?? $productModel->slug)),
@@ -104,17 +100,33 @@ class EloquentProductRepository implements ProductRepositoryInterface
             'sku' => $updateProductDTO->getSku() ?? $productModel->sku,
             'is_active' => $updateProductDTO->getIsActive() ?? $productModel->is_active,
             'is_featured' => $updateProductDTO->getIsFeatured() ?? $productModel->is_featured,
-            'image' => $path ?? $productModel->image
         ]);
         if ($updateProductDTO->getCategories()) {
             $productModel->categories()->sync($updateProductDTO->getCategories());
         }
+        if ($updateProductDTO->getImages()) {
+            if ($productModel->images) {
+                foreach ($productModel->images as $oldImage) {
+                    Storage::disk('public')->delete($oldImage->image_path);
+                    $oldImage->delete();
+                }
+            }
+
+            $imagesFiles = $updateProductDTO->getImages();
+            foreach ($imagesFiles as $file) {
+                $extension = $file->getClientOriginalExtension();
+                $path = $file->storeAs('products', $newSlug ?? $productModel->slug . "_" . uniqid() . "." . $extension, 'public');
+                $productModel->images()->create(['image_path' => $path]);
+            }
+        }
+
+//        dd($productModel);
 //        $productModel->load('categories');
 //        return ProductMapper::mapToDomain($productModel);
 //or
         Cache::forget('products_list');
         Cache::forget("product_{$productModel->id}");
-        return ProductMapper::mapToDomain($productModel->fresh('categories'));
+        return ProductMapper::mapToDomain($productModel->fresh('categories', 'images'));
 
     }
 
@@ -141,8 +153,8 @@ class EloquentProductRepository implements ProductRepositoryInterface
         Cache::forget("product_{$productToDelete->id}");
 
 //        dd($productToDelete->image);
-        if ($productToDelete->image) {
-            Storage::disk('public')->delete($productToDelete->image);
+        if ($productToDelete->main_image) {
+            Storage::disk('public')->delete($productToDelete->main_image);
         }
 
         return $productToDelete ? $productToDelete->forceDelete() : false;

@@ -23,7 +23,8 @@ class CreateProductRequest extends FormRequest
             'sku' => 'required|string|max:255|unique:products',
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
-            'image' => "nullable|image|mimes:jpg,jpeg,png,gif,webp,svg|max:2048",
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpg,jpeg,png,gif,webp,svg|max:2048',
             'categories' => 'array',
             'categories.*' => 'exists:categories,id'
         ];

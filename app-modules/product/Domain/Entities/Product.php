@@ -16,7 +16,7 @@ class Product
         public string  $sku,
         public bool    $is_active,
         public bool    $is_featured,
-        public ?string $image,
+        public ?array  $images = [],
         public array   $categories = []
     )
     {
@@ -24,12 +24,17 @@ class Product
     }
 
     /**
+     * @return array|null
+     */
+    public function getImages(): ?array
+    {
+        return $this->images;
+    }
+
+    /**
      * @return string|null
      */
-    public function getImage(): ?string
-    {
-        return $this->image;
-    }
+
 
     /**
      * @return bool

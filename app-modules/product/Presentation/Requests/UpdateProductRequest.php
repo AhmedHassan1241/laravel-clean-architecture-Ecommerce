@@ -24,7 +24,8 @@ class UpdateProductRequest extends FormRequest
             'sku' => 'sometimes|string|max:255|unique:products,sku,' . $this->route('id'),
             'is_active' => 'sometimes|boolean',
             'is_featured' => 'sometimes|boolean',
-            'image' => 'sometimes|image|mimes:jpg,jpeg,png,gif,webp,svg|max:2048',
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpg,jpeg,png,gif,webp,svg|max:2048',
             'categories' => 'sometimes|array',
             'categories.*' => 'exists:categories,id'
         ];

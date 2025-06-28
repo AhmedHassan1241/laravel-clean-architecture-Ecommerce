@@ -14,7 +14,7 @@ class CreateProductDTO
         private string  $sku,
         private bool    $is_active,
         private bool    $is_featured,
-        private ?string $image,
+        private ?array  $images,
         private array   $categories = []
     )
     {
@@ -22,12 +22,17 @@ class CreateProductDTO
     }
 
     /**
+     * @return array|null
+     */
+    public function getImages(): ?array
+    {
+        return $this->images;
+    }
+
+    /**
      * @return string|null
      */
-    public function getImage(): ?string
-    {
-        return $this->image;
-    }
+
 
     /**
      * @return bool

@@ -21,7 +21,7 @@ class ProductMapper
             sku: $productModel->sku,
             is_active: $productModel->is_active,
             is_featured: $productModel->is_featured,
-            image: $productModel->getImageUrl(),
+            images: $productModel->images ? ($productModel->images->map(fn($image) => asset('storage/' . $image->image_path))->toArray()) : [],
             categories: $productModel->categories ? ($productModel->categories->map(fn($categoryModel) => CategoryMapper::mapToDomain($categoryModel))->toArray()) : []
         );
     }
