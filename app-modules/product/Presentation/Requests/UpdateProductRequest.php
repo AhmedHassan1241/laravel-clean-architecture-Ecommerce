@@ -22,7 +22,11 @@ class UpdateProductRequest extends FormRequest
             'price' => 'sometimes|numeric|min:0',
             'stock' => 'sometimes|integer|min:0',
             'sku' => 'sometimes|string|max:255|unique:products,sku,' . $this->route('id'),
-            'is_active' => 'sometimes|boolean'
+            'is_active' => 'sometimes|boolean',
+            'is_featured' => 'sometimes|boolean',
+            'image' => 'sometimes|image|mimes:jpg,jpeg,png,gif,webp,svg|max:2048',
+            'categories' => 'sometimes|array',
+            'categories.*' => 'exists:categories,id'
         ];
     }
 

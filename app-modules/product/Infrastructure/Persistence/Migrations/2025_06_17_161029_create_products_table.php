@@ -18,7 +18,9 @@ return new class extends Migration {
             $table->decimal('price', 10, 2);
             $table->integer('stock')->default(0);
             $table->string('sku')->unique();
+            $table->string('image')->nullable();
             $table->boolean('is_active')->default(true);
+            $table->boolean('is_featured')->default(true);
             $table->timestamps();
         });
     }

@@ -64,4 +64,14 @@ class ProductService
     {
         return $this->productRepository->filter($request);
     }
+
+    public function products(int $id): ?array
+    {
+        return $this->productRepository->products($id);
+    }
+
+    public function featured(): ?array
+    {
+        return $this->productRepository->featured();
+    }
 }

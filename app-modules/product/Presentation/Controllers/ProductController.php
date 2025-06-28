@@ -6,6 +6,7 @@ use AppModules\product\Application\DTOs\CreateProductDTO;
 use AppModules\product\Application\DTOs\UpdateProductDTO;
 use AppModules\product\Application\UseCases\CreateProductUseCase;
 use AppModules\product\Application\UseCases\DeleteProductUseCase;
+use AppModules\Product\Application\UseCases\FeaturedProductUseCase;
 use AppModules\Product\Application\UseCases\FilterProductUseCase;
 use AppModules\Product\Application\UseCases\IndexAdminProductUseCase;
 use AppModules\product\Application\UseCases\IndexProductUseCase;
@@ -33,25 +34,11 @@ class ProductController extends Controller
         private UndoDeleteUseCase             $undoDeleteUseCase,
         private PermanentDeleteProductUseCase $permanentDeleteProductUseCase,
         private IndexAdminProductUseCase      $indexAdminProductUseCase,
-        private FilterProductUseCase          $filterProductUseCase
+        private FilterProductUseCase          $filterProductUseCase,
+        private FeaturedProductUseCase        $featuredProductUseCase
 
     )
     {
-
-    }
-
-    public function store(CreateProductRequest $request): JsonResponse
-    {
-        $data = $request->validated();
-
-        $productDTO = new CreateProductDTO($data['id'] ?? null, $data['name'], $data['slug'], $data['description'] ?? null, $data['price'], $data['stock'], $data['sku'], $data['is_active']);
-
-        $product = $this->createProductUseCase->execute($productDTO);
-
-        if (!$product) {
-            return response()->json(['message' => 'Product Created Failed !']);
-        }
-        return response()->json(['message:' => 'Product Created Successfully', 'Product :' => $product], 201);
 
     }
 
@@ -76,13 +63,37 @@ class ProductController extends Controller
     public function update(int $id, UpdateProductRequest $request): JsonResponse
     {
         $data = $request->validated();
-        $productDTO = new UpdateProductDTO($data['id'] ?? null, $data['name'] ?? null, $data['slug'] ?? null, $data['description'] ?? null, $data['price'] ?? null, $data['stock'] ?? null, $data['sku'] ?? null, $data['is_active'] ?? null);
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $data['image'] = $file;
+        }
+        $productDTO = new UpdateProductDTO($data['id'] ?? null, $data['name'] ?? null, $data['slug'] ?? null, $data['description'] ?? null, $data['price'] ?? null, $data['stock'] ?? null, $data['sku'] ?? null, $data['is_active'] ?? null, $data['is_featured'] ?? null, $data['image'] ?? null, $data['categories'] ?? null);
 
         $updatedProduct = $this->updateProductUseCase->execute($id, $productDTO);
         if (!$updatedProduct) {
             return response()->json(['message' => 'This Product Not Found'], 404);
         }
         return response()->json(['message' => "Product Updated Successfully", 'Product' => $updatedProduct], 200);
+    }
+
+    public function store(CreateProductRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $extension = $file->getClientOriginalExtension();
+            $imagePath = $file->storeAs('products', $data['slug'] . '.' . $extension, 'public');
+            $data['image'] = $imagePath;
+        }
+        $productDTO = new CreateProductDTO($data['id'] ?? null, $data['name'], $data['slug'], $data['description'] ?? null, $data['price'], $data['stock'], $data['sku'], $data['is_active'], $data['is_featured'], $data['image'] ?? null, $data['categories']);
+
+        $product = $this->createProductUseCase->execute($productDTO);
+
+        if (!$product) {
+            return response()->json(['message' => 'Product Created Failed !']);
+        }
+        return response()->json(['message:' => 'Product Created Successfully', 'Product :' => $product], 201);
+
     }
 
     public function destroy(int $id): JsonResponse
@@ -155,6 +166,16 @@ class ProductController extends Controller
 
         }
         return response()->json(['Product' => $products]);
+    }
+
+    public function featured(): JsonResponse
+    {
+        $productsFeatured = $this->featuredProductUseCase->execute();
+        if (!$productsFeatured) {
+            return response()->json(['message' => "No Featured Products Found"], 404);
+        }
+        return response()->json(['Product :' => $productsFeatured], 200);
+
     }
 
 }

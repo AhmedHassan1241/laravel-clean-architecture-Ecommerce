@@ -7,6 +7,7 @@ use AppModules\Category\Application\DTOs\StoreCategoryDTO;
 use AppModules\Category\Application\DTOs\UpdateCategoryDTO;
 use AppModules\Category\Application\UseCases\AllCategoriesUseCase;
 use AppModules\Category\Application\UseCases\DeleteCategoryUseCase;
+use AppModules\Category\Application\UseCases\ProductsInCategory;
 use AppModules\Category\Application\UseCases\ShowCategoryUseCase;
 use AppModules\Category\Application\UseCases\StoreCategoryUseCase;
 use AppModules\Category\Application\UseCases\UpdateCategoryUseCase;
@@ -17,9 +18,28 @@ use Illuminate\Routing\Controller;
 
 class CategoryController extends Controller
 {
-    public function __construct(private StoreCategoryUseCase $storeCategoryUseCase, private ShowCategoryUseCase $showCategoryUseCase, private AllCategoriesUseCase $allCategoriesUseCase, private UpdateCategoryUseCase $updateCategoryUseCase, private DeleteCategoryUseCase $deleteCategoryUseCase)
+    public function __construct(
+        private StoreCategoryUseCase  $storeCategoryUseCase,
+        private ShowCategoryUseCase   $showCategoryUseCase,
+        private AllCategoriesUseCase  $allCategoriesUseCase,
+        private UpdateCategoryUseCase $updateCategoryUseCase,
+        private DeleteCategoryUseCase $deleteCategoryUseCase,
+        private ProductsInCategory    $productsInCategory
+    )
     {
 
+    }
+
+    public function products(int $id): JsonResponse
+    {
+        $categoryProducts = $this->productsInCategory->execute($id);
+        if (!$categoryProducts) {
+            return response()->json([
+                'status' => false,
+                'message' => 'No Products In This Category'
+            ], 404);
+        }
+        return response()->json(['Products' => $categoryProducts], 200);
     }
 
     public function store(StoreCategoryRequest $request): JsonResponse

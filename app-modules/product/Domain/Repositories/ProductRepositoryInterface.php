@@ -29,5 +29,9 @@ interface ProductRepositoryInterface
 
     public function filter(Request $request): ?array;
 
+    public function products(int $id): ?array;
+
+
+    public function featured(): ?array;
 
 }

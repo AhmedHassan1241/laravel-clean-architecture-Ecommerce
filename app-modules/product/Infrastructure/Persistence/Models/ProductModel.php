@@ -2,6 +2,7 @@
 
 namespace AppModules\Product\Infrastructure\Persistence\Models;
 
+use AppModules\Category\Infrastructure\Persistence\Models\CategoryModel;
 use AppModules\product\Infrastructure\Persistence\Factories\ProductModelFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -40,6 +41,11 @@ class ProductModel extends Authenticatable
         return $query->whereBetween('price', [$min, $max]);
     }
 
+    public function scopeFeatured($query)
+    {
+        return $query->where('is_featured', true);
+    }
+
     public function scopeHasStock($query, $min = 1)
     {
         return $query->where('stock', '>=', $min);
@@ -53,5 +59,15 @@ class ProductModel extends Authenticatable
     public function inStock()
     {
         return $this->stock > 0;
+    }
+
+    public function categories()
+    {
+        return $this->belongsToMany(CategoryModel::class, 'category_product', 'product_id', 'category_id');
+    }
+
+    public function getImageUrl()
+    {
+        return asset('storage/' . $this->image);
     }
 }

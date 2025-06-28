@@ -27,4 +27,9 @@ class ProfileModel extends Authenticatable
         return $this->belongsTo(UserModel::class);
 
     }
+
+    public function getImageUrl(): ?string
+    {
+        return $this->image ? asset('storage/' . $this->image) : null;
+    }
 }

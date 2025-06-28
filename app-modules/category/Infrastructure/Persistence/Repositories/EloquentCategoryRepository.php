@@ -6,6 +6,7 @@ use AppModules\Category\Application\DTOs\StoreCategoryDTO;
 use AppModules\Category\Application\DTOs\UpdateCategoryDTO;
 use AppModules\Category\Domain\Entities\Category;
 use AppModules\Category\Domain\Repositories\CategoryRepositoryInterface;
+use AppModules\Category\Infrastructure\Mapper\CategoryMapper;
 use AppModules\Category\Infrastructure\Persistence\Models\CategoryModel;
 use Illuminate\Support\Str;
 
@@ -37,30 +38,17 @@ class EloquentCategoryRepository implements CategoryRepositoryInterface
         ]);
         $categoryModel->save();
 
-        return $this->mapToDomain($categoryModel);
+        return CategoryMapper::mapToDomain($categoryModel);
     }
 
-    public function mapToDomain(CategoryModel $categoryModel): Category
-    {
-        return new Category(
-            id: $categoryModel->id,
-            name: $categoryModel->name,
-            slug: $categoryModel->slug,
-            description: $categoryModel->description,
-            is_active: $categoryModel->is_active,
-            parent_id: $categoryModel->parent_id,
-
-        );
-
-    }
 
     public function index(): ?array
     {
 
         $mainCategoriesModel = CategoryModel::with('children')->where('is_active', true)->whereNull('parent_id')->get();
         return $mainCategoriesModel ? ($mainCategoriesModel->map(function ($categoryModel) {
-            return ['category' => $this->mapToDomain($categoryModel),
-                'children' => $categoryModel->children->map(fn($child) => $this->mapToDomain($child))->toArray()
+            return ['category' => CategoryMapper::mapToDomain($categoryModel),
+                'children' => $categoryModel->children->map(fn($child) => CategoryMapper::mapToDomain($child))->toArray()
             ];
         })->toArray()) : null;
     }
@@ -108,7 +96,7 @@ class EloquentCategoryRepository implements CategoryRepositoryInterface
             'parent_id' => $categoryDTO->getParentId() ?? $categoryModel->parent_id
         ]);
 
-        return $this->mapToDomain($categoryModel);
+        return CategoryMapper::mapToDomain($categoryModel);
 
     }
 
@@ -128,8 +116,8 @@ class EloquentCategoryRepository implements CategoryRepositoryInterface
 
         return $categoryModel
             ? [
-                'category' => $this->mapToDomain($categoryModel),
-                'children' => $categoryModel->children->map(fn($child) => $this->mapToDomain($child))->toArray()
+                'category' => CategoryMapper::mapToDomain($categoryModel),
+                'children' => $categoryModel->children->map(fn($child) => CategoryMapper::mapToDomain($child))->toArray()
             ]
             : null;
 

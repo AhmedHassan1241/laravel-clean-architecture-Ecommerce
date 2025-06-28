@@ -43,7 +43,14 @@ class ProfileController extends Controller
     public function update(UpdateProfileRequest $request): JsonResponse
     {
         $data = $request->validated();
-        $data['image'] = $request->toDTO();
+//        dd($request->file('image')->store('profiles', 'public'));
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $pathImage = $file->store('profiles', 'public');
+            $data['image'] = $pathImage;
+        }
+//        dd($data['image']);
+
         $profileDTO = new UpdateProfileDTO($data['phone'] ?? null, $data['address'] ?? null, $data['date_of_birth'] ?? null, $data['bio'] ?? null, $data['image'] ?? null);
 
         $profile = $this->updateProfileUseCase->execute($profileDTO);

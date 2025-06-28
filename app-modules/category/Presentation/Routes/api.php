@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Route;
 //    Route::get('/{id}', [CategoryController::class, 'show']);
 //});
 
+Route::get('categories/{id}/products', [CategoryController::class, 'products']);
 Route::apiResource('categories', CategoryController::class)
     ->only(['index', 'show'])
     ->parameters(['categories' => 'id']);

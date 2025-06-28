@@ -2,6 +2,7 @@
 
 namespace AppModules\product\Domain\Entities;
 
+use Exception;
 
 class Product
 {
@@ -13,9 +14,37 @@ class Product
         public float   $price,
         public int     $stock,
         public string  $sku,
-        public bool    $is_active)
+        public bool    $is_active,
+        public bool    $is_featured,
+        public ?string $image,
+        public array   $categories = []
+    )
     {
 
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isFeatured(): bool
+    {
+        return $this->is_featured;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCategories(): array
+    {
+        return $this->categories;
     }
 
     /**
@@ -80,5 +109,14 @@ class Product
     public function isActive(): bool
     {
         return $this->is_active;
+    }
+
+    public function reduceStock(int $amount): void
+    {
+        if ($amount > $this->stock) {
+            throw new Exception(message: "No Enough Stock Available");
+        }
+
+        $this->stock -= $amount;
     }
 }

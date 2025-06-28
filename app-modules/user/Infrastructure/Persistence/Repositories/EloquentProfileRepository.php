@@ -8,6 +8,7 @@ use AppModules\User\Domain\Entities\Profile;
 use AppModules\User\Domain\Repositories\ProfileRepositoryInterface;
 use AppModules\User\Infrastructure\Persistence\Models\ProfileModel;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class EloquentProfileRepository implements ProfileRepositoryInterface
 {
@@ -16,9 +17,6 @@ class EloquentProfileRepository implements ProfileRepositoryInterface
     {
         $user_id = Auth::id();
         $profile = ProfileModel::with('user')->where('user_id', $user_id)->first();
-//        dd($profile->user);
-//        dd($profile->user instanceof UserModel);
-
         if (!$profile) {
             return null;
         }
@@ -54,7 +52,8 @@ class EloquentProfileRepository implements ProfileRepositoryInterface
             address: $profileModel->address,
             date_of_birth: $profileModel->date_of_birth,
             bio: $profileModel->bio,
-            image: $profileModel->image
+            image: $profileModel->getImageUrl()
+
         );
     }
 
@@ -62,12 +61,16 @@ class EloquentProfileRepository implements ProfileRepositoryInterface
     {
         $user_id = Auth::id();
         $profileModel = ProfileModel::where('user_id', $user_id)->first();
+        if ($updateProfileDTO->getImage()) {
+            Storage::disk('public')->delete($profileModel->image);
+        }
         $profileModel->update([
             'phone' => $updateProfileDTO->getPhone() ?? $profileModel->phone,
             'address' => $updateProfileDTO->getAddress() ?? $profileModel->address,
             'date_of_birth' => $updateProfileDTO->getDateOfBirth() ?? $profileModel->date_of_birth,
             'bio' => $updateProfileDTO->getBio() ?? $profileModel->bio,
             'image' => $updateProfileDTO->getImage() ?? $profileModel->image,
+
         ]);
         return $this->mapToDomain($profileModel);
     }

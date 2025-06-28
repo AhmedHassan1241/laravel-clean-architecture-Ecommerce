@@ -12,9 +12,37 @@ class CreateProductDTO
         private float   $price,
         private int     $stock,
         private string  $sku,
-        private bool    $is_active)
+        private bool    $is_active,
+        private bool    $is_featured,
+        private ?string $image,
+        private array   $categories = []
+    )
     {
 
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isFeatured(): bool
+    {
+        return $this->is_featured;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCategories(): array
+    {
+        return $this->categories;
     }
 
     /**

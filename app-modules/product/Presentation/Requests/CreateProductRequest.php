@@ -21,8 +21,11 @@ class CreateProductRequest extends FormRequest
             'price' => 'required|numeric|min:0',
             'stock' => 'integer|min:0',
             'sku' => 'required|string|max:255|unique:products',
-            'is_active' => 'boolean'
-
+            'is_active' => 'boolean',
+            'is_featured' => 'boolean',
+            'image' => "nullable|image|mimes:jpg,jpeg,png,gif,webp,svg|max:2048",
+            'categories' => 'array',
+            'categories.*' => 'exists:categories,id'
         ];
     }
 }

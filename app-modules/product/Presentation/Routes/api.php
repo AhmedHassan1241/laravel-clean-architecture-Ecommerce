@@ -16,6 +16,7 @@ Route::middleware(['auth:sanctum', 'IsAdmin'])->group(function () {
 //for all
 Route::get('/products/search', [ProductController::class, 'search']);
 Route::get('/products/filter', [ProductController::class, 'filter']);
+Route::get('/products/featured', [ProductController::class, 'featured']);
 
 //for all
 Route::apiResource('products', ProductController::class)

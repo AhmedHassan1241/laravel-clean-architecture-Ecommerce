@@ -29,19 +29,8 @@ class UpdateProfileRequest extends FormRequest
             'address' => 'sometimes|string|max:100',
             'date_of_birth' => 'sometimes|date',
             'bio' => 'sometimes|string',
-            'image' => 'sometimes|image|max:2048|mimes:png,jpg,jpeg,gif'
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp,svg|max:2048'
         ];
     }
 
-    public function toDTO(): ?string
-    {
-
-
-        if ($this->hasFile('image')) {
-            $path = $this->file('image')->store('photos', 'public');
-            return asset('storage/' . $path);
-        }
-        return null;
-
-    }
 }

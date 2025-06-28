@@ -22,6 +22,8 @@ class ProductModelFactory extends Factory
             'stock' => $this->faker->numberBetween(0, 100),
             'sku' => $this->faker->unique()->word(),
             'is_active' => $this->faker->boolean(),
+            'is_featured' => $this->faker->boolean(),
+            'image' => $this->faker->imageUrl(640, 480, 'products', true, 'Product'),
             'created_at' => now(),
             'updated_at' => now(),
         ];
