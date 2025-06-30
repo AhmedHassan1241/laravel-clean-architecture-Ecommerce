@@ -60,27 +60,6 @@ class ProductController extends Controller
         return response()->json(['Product :' => $product], 200);
     }
 
-    public function update(int $id, UpdateProductRequest $request): JsonResponse
-    {
-        $data = $request->validated();
-        if ($request->hasFile('images')) {
-            $imagePaths = [];
-            $files = $request->file('images');
-
-            foreach ($files as $image) {
-                $imagePaths[] = $image;
-
-            }
-            $data['images'] = $imagePaths;
-        }
-        $productDTO = new UpdateProductDTO($data['id'] ?? null, $data['name'] ?? null, $data['slug'] ?? null, $data['description'] ?? null, $data['price'] ?? null, $data['stock'] ?? null, $data['sku'] ?? null, $data['is_active'] ?? null, $data['is_featured'] ?? null, $data['images'] ?? null, $data['categories'] ?? null);
-        $updatedProduct = $this->updateProductUseCase->execute($id, $productDTO);
-        if (!$updatedProduct) {
-            return response()->json(['message' => 'This Product Not Found'], 404);
-        }
-        return response()->json(['message' => "Product Updated Successfully", 'Product' => $updatedProduct], 200);
-    }
-
     public function store(CreateProductRequest $request): JsonResponse
     {
         $data = $request->validated();
@@ -104,6 +83,27 @@ class ProductController extends Controller
         return response()->json(['message:' => 'Product Created Successfully', 'Product :' => $product], 201);
 
     }
+
+    public function update(int $id, UpdateProductRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+        if ($request->hasFile('images')) {
+            $imagePaths = [];
+            $files = $request->file('images');
+
+            foreach ($files as $image) {
+                $imagePaths[] = $image;
+            }
+            $data['images'] = $imagePaths;
+        }
+        $productDTO = new UpdateProductDTO($data['id'] ?? null, $data['name'] ?? null, $data['slug'] ?? null, $data['description'] ?? null, $data['price'] ?? null, $data['stock'] ?? null, $data['sku'] ?? null, $data['is_active'] ?? null, $data['is_featured'] ?? null, $data['images'] ?? null, $data['categories'] ?? null);
+        $updatedProduct = $this->updateProductUseCase->execute($id, $productDTO);
+        if (!$updatedProduct) {
+            return response()->json(['message' => 'This Product Not Found'], 404);
+        }
+        return response()->json(['message' => "Product Updated Successfully", 'Product' => $updatedProduct], 200);
+    }
+
 
     public function destroy(int $id): JsonResponse
     {

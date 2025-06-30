@@ -1,0 +1,24 @@
+{
+	"name": "modules/cart",
+	"description": "Cart Module",
+	"type": "library",
+	"version": "1.0",
+	"license": "proprietary",
+	"require": {},
+	"autoload": {
+		"psr-4": {
+			"AppModules\\Cart\\": "./",
+			"AppModules\\Cart\\Tests\\": "tests/",
+			"AppModules\\Cart\\Database\\Factories\\": "database/factories/",
+			"AppModules\\Cart\\Database\\Seeders\\": "database/seeders/"
+		}
+	},
+	"minimum-stability": "stable",
+	"extra": {
+		"laravel": {
+			"providers": [
+				"AppModules\\Cart\\Providers\\CartServiceProvider"
+			]
+		}
+	}
+}

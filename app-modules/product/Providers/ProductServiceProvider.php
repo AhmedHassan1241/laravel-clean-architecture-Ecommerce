@@ -2,6 +2,7 @@
 
 namespace AppModules\Product\Providers;
 
+use AppModules\Cart\Infrastructure\Repositories\EloquentCartRepository;
 use AppModules\Product\Domain\Repositories\ProductRepositoryInterface;
 use AppModules\product\Infrastructure\Persistence\Repositories\EloquentProductRepository;
 use Illuminate\Support\Facades\Route;

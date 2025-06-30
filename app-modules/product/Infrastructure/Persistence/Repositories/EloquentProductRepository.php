@@ -62,25 +62,6 @@ class EloquentProductRepository implements ProductRepositoryInterface
     }
 
 
-    public function index(): ?array
-    {
-//        $products = ProductModel::all(); //all active products بيستدعي booted -> addGlobalScope
-//        $products = ProductModel::withoutGlobalScope('active')->get(); //all products with active + unactive
-//        $products = ProductModel::priceBetween(10, 50)->get(); // range  price of products , active
-//        $products = ProductModel::hasStock(90)->get();  // get stock>=90 , active
-        $products = Cache::remember('products_list', 300, fn() => ProductModel::with('categories')->get()); //cache
-//        $products = ProductModel::with('categories')->get();
-        return $products ? ($products->map(fn($productModel) => ProductMapper::mapToDomain($productModel))->toArray()) : null;
-    }
-
-    public function indexAdmin(): ?array
-    {
-        $products = ProductModel::withTrashed()->get();
-//        dd($products);
-
-        return $products ? ($products->map(fn($productModel) => ProductMapper::mapToDomain($productModel))->toArray()) : null;
-    }
-
     public function update(int $id, UpdateProductDTO $updateProductDTO): ?Product
     {
         $productModel = ProductModel::with('categories')->find($id);
@@ -129,6 +110,26 @@ class EloquentProductRepository implements ProductRepositoryInterface
         return ProductMapper::mapToDomain($productModel->fresh('categories', 'images'));
 
     }
+
+    public function index(): ?array
+    {
+//        $products = ProductModel::all(); //all active products بيستدعي booted -> addGlobalScope
+//        $products = ProductModel::withoutGlobalScope('active')->get(); //all products with active + unactive
+//        $products = ProductModel::priceBetween(10, 50)->get(); // range  price of products , active
+//        $products = ProductModel::hasStock(90)->get();  // get stock>=90 , active
+        $products = Cache::remember('products_list', 300, fn() => ProductModel::with('categories')->get()); //cache
+//        $products = ProductModel::with('categories')->get();
+        return $products ? ($products->map(fn($productModel) => ProductMapper::mapToDomain($productModel))->toArray()) : null;
+    }
+
+    public function indexAdmin(): ?array
+    {
+        $products = ProductModel::withTrashed()->get();
+//        dd($products);
+
+        return $products ? ($products->map(fn($productModel) => ProductMapper::mapToDomain($productModel))->toArray()) : null;
+    }
+
 
     public function destroy(int $id): bool
     {

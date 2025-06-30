@@ -2,11 +2,13 @@
 
 namespace AppModules\Product\Infrastructure\Persistence\Models;
 
+use AppModules\cart\Infrastructure\Persistence\Models\CartItemsModel;
+use AppModules\cart\Infrastructure\Persistence\Models\CartModel;
 use AppModules\Category\Infrastructure\Persistence\Models\CategoryModel;
 use AppModules\product\Infrastructure\Persistence\Factories\ProductModelFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
@@ -14,7 +16,7 @@ use Spatie\Permission\Traits\HasRoles;
 /**
  * @property mixed|string $name
  */
-class ProductModel extends Authenticatable
+class ProductModel extends Model
 {
     //
     use HasApiTokens, HasFactory, Notifiable, HasRoles, SoftDeletes;
@@ -71,4 +73,10 @@ class ProductModel extends Authenticatable
     {
         return $this->hasMany(ProductImageModel::class, 'product_id');
     }
+
+    public function cart()
+    {
+        return $this->hasMany(CartModel::class, 'product_id');
+    }
+
 }
